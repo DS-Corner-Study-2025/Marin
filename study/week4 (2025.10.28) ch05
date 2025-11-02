@@ -1,0 +1,323 @@
+
+
+책 제목: 스프링 부트 완전 정복
+페이지: 126p ~ 167p
+목차: 5장 요청 처리 메서드와 파라미터 유형
+
+
+
+
+1. 요청 파아미터와 @RequesParam
+요청 처리 메서드: 요청 URL에 포함된 파라미터 값을 전달받아 처리
+@RequesParam
+
+
+1. 요청 파아미터
+
+GET형태의 쿼리문을 '이름=값(name=value)' 형식으로 받음.
+다중 쿼리문은 '&'로 구분 ( color = red & year = 2025 )
+@RequesParam로 요청 파라미터의 수가 많지 않을 때 주로 사용.
+웹에서 요청하는 요청 파라미터와 이름이 동일해야 한다.
+이 값이 메서드 매개변수의 데이터 타입에 따라 적절하게 변환.
+@ReauestMapping의 요청 매칭 경로에 포함된 요청 파아미터 값을 메서드의 매개변수로 정달받음.
+@ReauestMapping("요청 경로")
+public String 메서드_이름 (@RequestParam("요청_파라미터"), ...) {}
+
+// public String 메서드_이름 (@RequestParam(value = "요청_파라미터"), ...) {}
+
+
+
+
+2. @RequesParam  속성
+
+defaultValue(String): 요청 파라미터가 없을때, 기본값
+name(String): 요청 파라미터 이름
+required(boolean): 요청 파라미터의 필수 여부
+value(String): name의 별칭
+// URL = http://.../exam01?id=admin&passwd=admin1234
+
+package com.springboot.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+
+@Controller
+public class Example01Controller {
+
+    @RequestMapping("/exam01")
+    public String requestMethod(
+            @RequestParam(value = "id", defaultValue="관리자") String userId,
+            @RequestParam("passwd") String userPw,
+            Model model) {
+
+        model.addAttribute("data1", "@RequestParam 예제");
+        model.addAttribute("data2", "요청 파라미터 id 값 : " + userId + "<br>요청 파라미터 passwd 값 : " + userPw);
+
+        return "viewPage";
+    }
+}
+
+/*
+id = admin (없으면 "관리자")
+passwd = admin1234
+*/
+
+/*
+출력
+@RequestParam 예제
+요청 파라미터 id 값 : admin
+요청 파라미터 passwd 값 : admin1234
+*/
+
+
+
+
+데이터(변수)에 <b>안녕</b>이라는 값이 들어있다고 가정해 보세요.
+
+th:text
+HTML 태그를 글자 그대로 보여줍니다.
+결과: 화면에 <b>안녕</b>이라고 나옵니다.
+th:utext
+HTML 태그를 번역(실행)해서 보여줍니다.
+결과: 화면에 안녕 (굵은 글씨)이라고 나옵니다.
+th:text는 안전하게 글자만 보여주고, th:utext는 HTML 태그를 적용시켜 줍니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. 경로 변수와 @PathVariable
+웹 URL의 파라미터를 전달받는 경로를 처리하는 매개변수
+@PathVariable
+1. 경로 변수
+
+경로 변수: 웹 요펑 URL에 포함된 파라미터 값을 전달 받을 때 사용하는 변수
+ // URL = http:// .../car/red
+
+ ...
+ @GetMapping("/car/color")
+    public String PathMethod(@PathVariable("color") String param1, ...)
+    {
+    	...
+        return "carPage";
+     }
+ }
+
+ // color은 red값을 전달 받습니다.
+
+
+
+
+2. @PathVariable로 경로 변수 처리
+
+요청 처리 메서드의 매개변수를 전달받는다.
+요청처리 메서드의 매개변수의 데이터 타입과 일치해야 한다.
+@RequestMapping(..../{경로_변수})
+public String 메서드_이름(@PathVariable ("경로_변수") 매개변수타입....) {}
+
+// public String 메서드_이름(@PathVariable (value = "경로_변수") 매개변수타입....) {
+
+
+@PathVariable
+
+// URL = http://.../exam04/id=admin/passwd=admin1234
+
+...
+
+@Controller
+public class Example03Controller {
+    @GetMapping("/exam03/{id}/{passwd}")
+    public String requestMethod(@PathVariable("id") String userId,
+    		@PathVaruable("passwd") String userPw, Model model) {
+        model.addAttribute("data1", "@PathVariable 예제");
+        model.addAttribute("data2", "경로 변수 id값: "  + userId "<br> 경로 변수passwd값: " + userPw);
+        return "viewPage";
+    }
+}
+
+/*
+출력
+@PathVariable 예제
+경로 변수 id값: admin
+경로 변수passwd값: admin1234
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3. 매트릭스 변수와 @MatrixVariable
+웹 요청이 다중 파라미터 값을 받을 때 처리
+@MatrixVariable
+1. 매트릭스 변수
+
+요청 URL 에서 파라미터 값을 전달 받지만, 세미콜론(;)이나 콤마(,)로 다중 데이터 구분
+// URL = http://.../cars/mycar;color=red;year=2024
+
+@Controller
+public class CarController {
+	...
+    @GetMapping("/cars/{info}")
+    public String matrixMethod(
+        @MatrixVariable(pathVar="color") String param1,
+        @MatrixVariable(pathVar="year") String param2
+    ) {
+        ...
+        return "carPage";
+    }
+}
+
+
+
+
+
+
+2. @MatrixVariable로 매트릭스 변수 처리
+
+@RequestMapping("{경로변수}")
+public String 매서드_이름( @MatrixVariable("매트릭스_변수") 매개변수,...){}
+
+// public String 매서드_이름( @MatrixVariable(value = "매트릭스_변수") 매개변수,...){}
+
+
+@MatrixVariable의 속성
+
+defaultValue(String): 요청 파라미터가 없을때, 기본값
+name(String): 요청 파라미터 이름
+pathVar(String): URI 경로 변수의 이름으로, 경로 구분에서 동일한 이름을 명확하게 구분할 떄 사용
+required(boolean): 매트릭스 변수의 필요 여부
+value(String): name=value애서 name을 가르킴
+// URL = http://.../exam06/admin;passwd=admin1234/user/hong;passwd=hong1004
+
+...
+@Controller
+public class Example06Controller {
+    @GetMapping("/exam06/{id1}/user/{id2}")
+    public String requestMethod(
+        @PathVariable("id1") String userId1,
+        @MatrixVariable(value="passwd", pathVar="id1") String userPw1,
+        @PathVariable("id2") String userId2,
+        @MatrixVariable(value="passwd",defaultValue="admin123" pathVar="id2") String userPw2,
+        Model model) {
+
+        model.addAttribute("data1", "@MatrixVariable 예제");
+        model.addAttribute("data2",
+            "경로 변수 id1 값 : " + userId1 + " + 매트릭스 변수 passwd 값 : " + userPw1 + "<br>" +
+            "경로 변수 id2 값 : " + userId2 + " + 매트릭스 변수 passwd 값 : " + userPw2);
+        return "viewPage";
+    }
+}
+/*
+출력
+@MatrixVariable 예제
+경로 변수 id1값: admin 매트릭스 변수 passwd값: admin1234
+경로 변수 id2값: hong 매트릭스 변수 passwd값: hong1234
+*/
+
+
+
+
+
+
+// URL = http://.../exam08/admin;passwd=admin1234;name=관리자/user/hong;passwd=hong1004;name=홍길순
+
+...
+@Controller
+public class Example08Controller {
+    @GetMapping("/exam08/{id1}/user/{id2}")
+    public String requestMethod(
+            @MatrixVariable MultiValueMap<String String> var1,
+            @MatrixVariable(pathVar="id2") MultiValueMap<String String> var2,
+            Model model) {
+        model.addAttribute("data3", var1 + "<p>"+var2)
+        return "viewPage";
+    }
+}
+/*
+출력
+@MatrixVariable 예제
+{passwd=[hong1004, admin1234], name=[홍길돌, 관리자]}
+{passwd=[hong1004], name=[홍길돌]}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4. [도서 쇼핑몰] 도서상세 정보 표시하기
+1. @ReauestParam으로 ID와 일치하는 도서 상세 정보 출력하기
+
+도서 상세 정보 메서드 정의 & 작성
+도서 상세 정보 가져오는 메서드 정의 & 작성
+도서 상세 정보 가져오는 요청 처리 메서드 생성
+도서 상세 정보 버튼 작성
+도서 상세 정보 페이지 작성
+2. @PathVariavle로 분야 일치하는 도서 목록 출력하기
+
+도서 분야를 가져오는 메서드 정의 & 작성 (BookRepository)
+도서 분야를 가져오는 메서드 정의 & 작성 (BookService)
+도서 분야를 가져오는 요청 처리 메서드 정의 & 작성 (BookController)
+도서 분야를 갖오는 뷰 페이지 작성 (books.html)
+3. MatrixVariable로 분야와출판사가 일치하는 도서 목록 출력하기
+
+도서 분야와 출판사를 가져오는 메서드 정의 & 작성 (BookRepository)
+도서 분야를 출판사를 가져오는 메서드 정의 & 작성 (BookService)
+도서 분야를 출판사를 가져오는 요청 처리 메서드 정의 & 작성 (BookController)
+4. 결과
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+연습문제
