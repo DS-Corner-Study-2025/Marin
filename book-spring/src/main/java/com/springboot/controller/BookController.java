@@ -1,10 +1,14 @@
 package com.springboot.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.MatrixVariable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,12 +49,22 @@ public class BookController {
         return "book"; // book.html 템플릿으로 이동
     }
 
-    // 5 도서 분야를 가져오는 요청 처리 메서드 작성
+    // 2-5 도서 분야를 가져오는 요청 처리 메서드 작성
     @GetMapping("/{category}") // @RequestMapping(value = "/{category}", method = RequestMethod.GET)와 동일
     public String requestBooksByCategory(
             @PathVariable("category") String bookCategory, Model model) { //
         List<Book> booksByCategory = bookService.getBookListByCategory(bookCategory); //
         model.addAttribute("bookList", booksByCategory); //
         return "books"; //
+    }
+
+    //3-5
+    @GetMapping("/filter/{bookFilter}")
+    public String requestBooksByFilter(
+            @MatrixVariable(pathVar="bookFilter") Map<String, List<String>> bookFilter, Model model) {
+
+        Set<Book> booksByFilter = bookService.getBookListByFilter(bookFilter);
+        model.addAttribute("bookList", booksByFilter);
+        return "books";
     }
 }

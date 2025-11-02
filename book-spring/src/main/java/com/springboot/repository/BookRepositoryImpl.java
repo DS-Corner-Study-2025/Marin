@@ -2,7 +2,10 @@ package com.springboot.repository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 import com.springboot.domain.Book;
@@ -76,7 +79,7 @@ class BookRepositoryImpl implements BookRepository {
         return bookInfo;
     }
 
-    // 2 도서 분야를 가져오는 메서드 작성
+    // 2-2 도서 분야를 가져오는 메서드 작성
     public List<Book> getBookListByCategory(String category) { //
         List<Book> booksByCategory = new ArrayList<Book>(); //
         for(int i = 0; i < listOfBooks.size(); i++) { //
@@ -86,5 +89,41 @@ class BookRepositoryImpl implements BookRepository {
             }
         }
         return booksByCategory; //
+    }
+
+    // 3-2 추가된 메서드: 필터 맵으로 도서 목록 가져오기
+    public Set<Book> getBookListByFilter(Map<String, List<String>> filter) {
+        Set<Book> booksByPublisher = new HashSet<Book>();
+        Set<Book> booksByCategory = new HashSet<Book>();
+        Set<String> filterKey = filter.keySet();
+
+        // 1. 출판사(publisher)로 필터링
+        if (filterKey.contains("publisher")) {
+            for (int j = 0; j < filter.get("publisher").size(); j++) {
+                String publisherName = filter.get("publisher").get(j);
+                for (int i = 0; i < listOfBooks.size(); i++) {
+                    Book book = listOfBooks.get(i);
+                    if (publisherName.equalsIgnoreCase(book.getPublisher())) {
+                        booksByPublisher.add(book);
+                    }
+                }
+            }
+        }
+
+        // 2. 분야(category)로 필터링
+        if (filterKey.contains("category")) {
+            for (int i = 0; i < filter.get("category").size(); i++) {
+                String categoryName = filter.get("category").get(i);
+                List<Book> list = getBookListByCategory(categoryName);
+                booksByCategory.addAll(list);
+            }
+        }
+
+        // 3. 교집합만 최종 결과에 저장
+        if (filterKey.contains("category") && filterKey.contains("publisher")) {
+            booksByCategory.retainAll(booksByPublisher); // booksByCategory에 booksByPublisher와의 교집합만 남김
+        }
+
+        return booksByCategory;
     }
 }
