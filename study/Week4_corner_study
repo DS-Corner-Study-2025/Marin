@@ -1,0 +1,46 @@
+빈칸 Quiz
+1. 요청 파라미터 수가 많지 않을 때 사용하는 요청 처리 메서드 애너테이션은?
+
+2. URL의 요청 파라미터 값을 전달받을 때 사용하는 요청 처리 메서드 애너테이션은?
+
+3. 세미콜론으로 다중 데이터 전달받는 요청 처리 메서드 애너테이션은?
+
+4. 요청 파라미터는 (            ) 와 같은 형태로 전달된다.
+
+5. (            )은 @MatrixVariable 속성 중에서 기본값으로 대체하여 사용하는 속성이다.
+
+
+
+답:
+
+1. @RequestParam
+
+2. @PathVariable
+
+3. @MatrixVariable
+
+4. 이름=값
+
+5. defaultValue
+
+코드 Quiz
+1. http://localhost8080:/movies/FindingNemo 를 입력했을 때 매핑이 되도록 코드를 작성하시오.
+
+답: /movies/{title}, @PathVariable("title") String title
+
+@GetMapping("_________________")
+	public String requestMovies01(_________________________, Model model) {
+		model.addAttribute("movieList", title);
+		return "movies";
+	}
+
+
+2. http://localhost8080:/movies?title=FindingNemo 를 입력했을 때 매핑이 되도록 코드를 작성하시오.
+
+답: /movies, @RequestParam("title") String title
+
+@GetMapping("______")
+	public String requestMovies02(________________, Model model) {
+		model.addAttribute("movieList", title);
+		return "movies";
+	}
