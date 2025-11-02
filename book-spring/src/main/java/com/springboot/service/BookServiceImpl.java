@@ -18,4 +18,15 @@ public class BookServiceImpl implements BookService {
     public List<Book> getAllBookList() {
         return bookRepository.getAllBookList();
     }
+
+    public Book getBookById(String bookId) {
+        Book bookById = bookRepository.getBookById(bookId);
+        return bookById;
+    }
+
+    // 4 도서 분야를 가져오는 메서드 작성
+    public List<Book> getBookListByCategory(String category) { //
+        List<Book> booksByCategory = bookRepository.getBookListByCategory(category); //
+        return booksByCategory; //
+    }
 }

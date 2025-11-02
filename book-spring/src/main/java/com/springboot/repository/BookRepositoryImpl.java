@@ -23,6 +23,7 @@ class BookRepositoryImpl implements BookRepository {
         book1.setCategory("IT전문서");
         book1.setUnitsInStock(1000);
         book1.setReleaseDate("2024/02/20");
+        book1.setCondition("New");
 
         Book book2 = new Book();
         book2.setBookId("ISBN1235");
@@ -34,6 +35,7 @@ class BookRepositoryImpl implements BookRepository {
         book2.setCategory("IT교육교재");
         book2.setUnitsInStock(1000);
         book2.setReleaseDate("2023/01/10");
+        book2.setCondition("Old");
 
         Book book3 = new Book();
         book3.setBookId("ISBN1236");
@@ -45,6 +47,7 @@ class BookRepositoryImpl implements BookRepository {
         book3.setCategory("IT교육교재");
         book3.setUnitsInStock(1000);
         book3.setReleaseDate("2023/06/30");
+        book3.setCondition("E-Book");
 
         listOfBooks.add(book1);
         listOfBooks.add(book2);
@@ -54,5 +57,34 @@ class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> getAllBookList() {
         return listOfBooks;
+    }
+
+    public Book getBookById(String bookId) {
+        Book bookInfo = null;
+
+        for (int i = 0; i < listOfBooks.size(); i++) {
+            Book book = listOfBooks.get(i);
+            if (book != null && book.getBookId() != null && book.getBookId().equals(bookId)) {
+                bookInfo = book;
+                break;
+            }
+        }
+
+        if (bookInfo == null) {
+            throw new IllegalArgumentException("도서ID가 " + bookId + "인 해당 도서를 찾을 수 없습니다.");
+        }
+        return bookInfo;
+    }
+
+    // 2 도서 분야를 가져오는 메서드 작성
+    public List<Book> getBookListByCategory(String category) { //
+        List<Book> booksByCategory = new ArrayList<Book>(); //
+        for(int i = 0; i < listOfBooks.size(); i++) { //
+            Book book = listOfBooks.get(i); //
+            if (category.equalsIgnoreCase(book.getCategory())) { //
+                booksByCategory.add(book); //
+            }
+        }
+        return booksByCategory; //
     }
 }
