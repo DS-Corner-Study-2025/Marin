@@ -11,4 +11,5 @@ public interface BookService {
     Book getBookById(String bookId);
     List<Book> getBookListByCategory(String category); // 2-3 도서 분야를 가져오는 메서드 정의
     Set<Book> getBookListByFilter(Map<String, List<String>> filter); // 3-3
+    void setNewBook(Book book); // 6장 2-5 신규 도서 등록 메서드 추가
 }

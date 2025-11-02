@@ -1,4 +1,4 @@
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>도서 등록</title>
     <link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,13 +22,13 @@
     </div>
 
     <div class="row align-items-md-stretch">
-        <form action="/BookMarket/books/add" method="post">
-            <legend>신규 도서 등록</legend>
+        <form action="/BookMarket/books/add" method="post" th:object="${newBook}">
+            <legend>[[${addTitle}]]</legend>
 
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">도서ID</label>
                 <div class="col-sm-3">
-                    <input type="text" name="bookId" class="form-control">
+                    <input type="text" th:field="*{bookId}" class="form-control">
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">재고수</label>
                 <div class="col-sm-3">
-                    <input type="text" name="unitsInStock" class="form-control"/>
+                    <input type="text" th:field="*{unitsInStock}" class="form-control"/>
                 </div>
             </div>
 
@@ -91,8 +91,8 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">상태</label>
                 <div class="col-sm-3">
-                    <input type="radio" name="condition" value="New"/>New
-                    <input type="radio" name="condition" value="Old"/>Old
+                    <input type="radio" name="condition" value="New"/>New&nbsp;
+                    <input type="radio" name="condition" value="Old"/>Old&nbsp;
                     <input type="radio" name="condition" value="E-Book"/>E-Book
                 </div>
             </div>

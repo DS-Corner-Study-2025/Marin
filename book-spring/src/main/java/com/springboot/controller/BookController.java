@@ -7,9 +7,12 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.MatrixVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,7 +73,27 @@ public class BookController {
 
     // #6장 1-1
     @GetMapping("/add")
-    public String requestAddBookForm() { //
+    public String requestAddBookForm(Model model) {
+        Book book = new Book();
+        model.addAttribute("newBook", book);
         return "addBook"; // 뷰 이름으로 "addBook"을 반환하여 addBook.html 파일을 출력합니다.
+    }
+
+    // #6장 2-7
+    @PostMapping("/add")
+    public String submitAddNewBook(@ModelAttribute("newBook") Book book, BindingResult result) {
+    if (result.hasErrors()) { // 바인딩 오류가 발생하면 (ex: long에 빈 문자열)
+        return "addBook"; // 400 에러 대신 폼 페이지를 다시 보여줍니다.
+    }
+
+    bookService.setNewBook(book);
+    return "redirect:/books"; // 리포지토리의 setNewBook 호출
+}
+
+    // #6장 2-8
+    // 모델에 공통 속성 추가 (도서 등록 페이지 제목)
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        model.addAttribute("addTitle", "신규 도서 등록");
     }
 }

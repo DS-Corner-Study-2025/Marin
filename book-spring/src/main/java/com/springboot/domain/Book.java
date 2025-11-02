@@ -1,6 +1,9 @@
 package com.springboot.domain;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
+@Data
 
 public class Book {
     private String bookId;        // 도서 ID

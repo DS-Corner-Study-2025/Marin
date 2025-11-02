@@ -79,6 +79,11 @@ class BookRepositoryImpl implements BookRepository {
         return bookInfo;
     }
 
+    // 6장 2-4
+    public void setNewBook(Book book){
+        listOfBooks.add(book);
+    }
+
     // 2-2 도서 분야를 가져오는 메서드 작성
     public List<Book> getBookListByCategory(String category) { //
         List<Book> booksByCategory = new ArrayList<Book>(); //
