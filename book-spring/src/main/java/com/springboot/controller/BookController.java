@@ -67,4 +67,10 @@ public class BookController {
         model.addAttribute("bookList", booksByFilter);
         return "books";
     }
+
+    // #6장 1-1
+    @GetMapping("/add")
+    public String requestAddBookForm() { //
+        return "addBook"; // 뷰 이름으로 "addBook"을 반환하여 addBook.html 파일을 출력합니다.
+    }
 }
