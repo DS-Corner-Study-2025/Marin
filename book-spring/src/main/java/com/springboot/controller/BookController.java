@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.springboot.domain.Book;
 import com.springboot.service.BookService;
 import org.springframework.web.servlet.ModelAndView;
+import java.io.File;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
 @Controller
 @RequestMapping(value = "/books")  // 클래스 레벨 매핑
@@ -28,6 +31,9 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @Value("${file.uploadDir}")
+    String fileDir;
 
     @GetMapping
     public String requestBookList(Model model) {
@@ -81,16 +87,27 @@ public class BookController {
         return "addBook"; // 뷰 이름으로 "addBook"을 반환하여 addBook.html 파일을 출력합니다.
     }
 
-    // #6장 2-7
+    // #6장 2-7 -> 7장 7-2
     @PostMapping("/add")
-    public String submitAddNewBook(@ModelAttribute("newBook") Book book, BindingResult result) {
-    if (result.hasErrors()) { // 바인딩 오류가 발생하면 (ex: long에 빈 문자열)
-        return "addBook"; // 400 에러 대신 폼 페이지를 다시 보여줍니다.
-    }
+    public String submitAddNewBook(Book book) {
+        MultipartFile bookImage = book.getBookImage(); 
 
-    bookService.setNewBook(book);
-    return "redirect:/books"; // 리포지토리의 setNewBook 호출
-}
+        String saveName = bookImage.getOriginalFilename(); 
+        File saveFile = new File(fileDir, saveName);
+
+        if (bookImage != null && !bookImage.isEmpty()) {
+            try {
+                bookImage.transferTo(saveFile); 
+            } catch (Exception e) {
+                throw new RuntimeException("도서 이미지 업로드가 실패하였습니다.", e);
+            }
+        }
+
+        book.setFileName(saveName);
+        book.service.setNewBook(book); // DB 저장 로직 (가정)
+
+        return "redirect:/books"; // 리다이렉트
+    }
 
     // #6장 2-8
     // 모델에 공통 속성 추가 (도서 등록 페이지 제목)
@@ -112,7 +129,8 @@ public class BookController {
                 "category",
                 "unitsInStock",
                 "releaseDate",
-                "condition"
+                "condition",
+                "bookImage"
         );
     }
 
