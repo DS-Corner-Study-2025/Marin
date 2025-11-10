@@ -16,6 +16,7 @@ public class Book {
     private long unitsInStock;    // 재고수
     private String releaseDate;   // 출판일(월/년)
     private String condition;     // 신규도서 or 중고도서 or 전자책
+    private String fileName;      // 도서 이미지 파일
 
     public Book() {
         super();
