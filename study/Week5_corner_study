@@ -1,0 +1,72 @@
+1. <form> 태그에서 데이터를 전송하는 HTTP 방식을 설정하는 속성은 _____ 입니다. (예: GET, POST)
+
+
+2. <select> 태그의 하위 태그인 <option>에서, 해당 항목을 초깃값으로 선택되도록 설정하는 속성은 _____ 입니다.
+
+
+3. 여러 줄의 텍스트를 입력할 수 있는 태그는 _____ 입니다.
+
+
+4. 스프링에서 폼 데이터를 커맨드 객체의 필드에 자동으로 바인딩하고 Model에도 추가하는 역할을 하는 어노테이션은 _____ 입니다.
+
+
+5. @InitBinder를 사용하여 특정 폼 파라미터(예: hobby)가 데이터 바인딩되는 것을 차단할 때 사용하는 WebDataBinder의 메서드는 _____ 입니다.
+
+
+
+
+
+문제 1: ID와 비밀번호 입력 필드
+다음은 ID와 비밀번호를 입력받는 HTML 폼 코드의 일부입니다. 비밀번호를 입력하는 <input> 태그를 완성하세요.
+
+<label for="userId">아이디:</label>
+<input type="text" id="userId" name="id" size="10" required>
+<br><br>
+
+<label for="userPw">비밀번호:</label>
+<input (A) id="userPw" name="pw" size="10" required>
+
+
+
+문제 2: @ModelAttribute 사용
+Spring Controller에서 폼으로부터 전송된 데이터를 Member 객체로 바인딩하고, 이 객체를 "memData"라는 이름으로 Model에 추가하는 요청 처리 메서드를 완성하세요.
+
+@PostMapping("/member")
+public String submitForm((A) Member member, Model model) {
+    // Member 객체를 "memData"라는 이름으로 Model에 추가
+    model.addAttribute("memData", (B)); 
+    return "resultView";
+}
+
+
+
+
+
+
+-------------빈칸----------------
+(1) 정답: method
+
+(2) 정답: selected
+
+(3) 정답: <textarea>
+
+(4) 정답: @ModelAttribute
+
+(5) 정답: setDisallowedFields()
+
+
+-------------코드----------------
+문제 1
+<input type="password" id="userPw" name="pw" size="10" required>
+
+
+
+문제 2
+(A): @ModelAttribute
+(B): member
+
+
+
+
+
+

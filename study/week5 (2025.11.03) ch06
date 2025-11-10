@@ -1,0 +1,374 @@
+
+
+책 제목: 스프링 부트 완전 정복
+페이지: 168p ~ 203p
+목차: 6장 폼 태그
+
+
+
+
+
+
+
+
+1. 폼 태그 개요
+폼태그: 사용가의 입력이나 선택 정보를 웹 서보로 전달하는 폼태그
+1. 폼
+
+입력 받은 데이터를 서버로 전송하고 서버는 데이터를 처리하고 결과에 따라 다른 웹 페이지로 보여준다.
+사용자와의 상호작용: 사용자가 뭘 원하는지 파악 가능
+
+
+
+
+
+
+
+2. <form> 태그 사용법
+
+form 태그의 속성
+
+속성	설명
+action	데이터를 받아 처리하는 웹 페이지의 URL 설정
+method	데이터를 전송하는 HTTP 방식 설정
+name	폼을 식별하는 이름 설정
+target	폼 처리 결과를 응답할 프레임 설정
+enctype	폼을 전송하는 콘텐츠 MIME 유형 설정
+accept-charset	폼 전송에 사용할 문자 인코딩 설정
+
+
+
+
+입력 태그 양식
+
+<input>
+
+속성	값	설명
+type
+text	한 줄 텍스트 입력
+radio	라디오 버튼으로 열거된 것 중 하나만 선택
+checkbox	체크 박스로 열거된 것 중 여러 개 선택
+password	암호 입력
+hidden	보이지 않고 숨겨서 전송
+file	파일 업로드를 위한 파일 선택
+button	버튼 모양 출력
+reset	폼에 입력된 값을 모두 초기화
+submit	폼에 입력된 값을 서버에 모두 전송
+name	텍스트	입력 양식을 식별하는 이름 설정
+value	텍스트	입력 양식의 초깃값 설정
+
+
+
+
+<select>
+
+속성	값	설명
+name	텍스트	목록 상자의 이름 설정
+size	숫자	한 번에 표시할 항목의 개수 설정
+multiple
+$\mathbf{\text{[Ctrl]}}$ 키를 눌러 다중 선택 설정
+하위 태그 <option>
+
+속성	값	설명
+value	텍스트	항목의 값 설정
+selected
+해당 항목을 초깃값으로 선택
+disabled
+항목을 비활성화
+
+
+
+
+<textarea>
+
+속성	값	설명
+name	텍스트	이름 설정
+cols	숫자	입력할 텍스트 영역의 너비 (열 크기) 설정
+rows	숫자	입력할 텍스트 영역의 높이 (행 크기) 설정
+wrap
+off	줄 바꿈을 하지 않음
+soft	$\mathbf{\text{[Enter]}}$를 누르지 않아도 입력 행 끝에서 자동 줄 바꿈
+hard	$\mathbf{\text{soft}}$ 상태와 비슷하며, 서버에 전송할 때 캐리지 리턴 문자를 전달
+
+
+
+
+
+
+
+
+
+
+
+
+3. 예시
+
+...
+
+        <label for="userId">아이디:</label>
+        <input type="text" id="userId" name="id" value="" size="10" required>
+        <br><br>
+
+        <label for="userPw">비밀번호:</label>
+        <input type="password" id="userPw" name="pw" value="" size="10" required>
+        <br><br>
+
+        <p>성별:
+        <input type="radio" name="gender" value="male" checked> 남자
+        <input type="radio" name="gender" value="female"> 여자
+        <br><br>
+
+        <p>취미:
+        <input type="checkbox" name="hobby" value="독서"> 독서
+        <input type="checkbox" name="hobby" value="운동"> 운동
+        <input type="checkbox" name="hobby" value="영화"> 영화
+        <br><br>
+
+        <label for="userLoc">거주 지역:</label>
+        <select id="userLoc" name="location">
+            <option value="">--지역 선택--</option>
+            <option value="seoul">서울</option>
+            <option value="gyeonggi" selected>경기</option>
+            <option value="busan">부산</option>
+        </select>
+        <br><br>
+
+        <label for="intro">자기소개:</label><br>
+        <textarea id="intro" name="introduction" cols="40" rows="5" wrap="soft"></textarea>
+        <br><br>
+
+        <input type="hidden" name="joinDate" value="2025-11-03">
+
+        <input type="submit" value="가입 완료">
+
+        <input type="reset" value="다시 작성">
+...
+
+
+
+
+
+
+
+
+
+
+
+2. @ModelAttribute를 이용한 데이터 바인딩
+웹 요청이 URL를 처리하기 전에 커맨드 객체에 데이터를 담는다.
+@ModelAttribute
+1. 커맨드 객체와 롬복
+
+커맨드 객체: Setter()매서드를 이용해 도메인 객체에 정의된 프로퍼티로 데이터를 바인딩하는 객체
+요청 파라미터 이름 == 폼에서 전송된  파라미터 이름
+lombok: Getter, Setter자동 생성 (의존성 주입 필요)
+compileOnly 'org.projectlombok:lombok'
+annotationProcessor 'org.projectlombok:lombok'
+
+
+
+
+
+
+2. 요청 처리 메서드의 매개변수에 적용
+
+@ModelAttribute: 폼 데이터를 커맨드 객체가 매핑하고 데이터를 프로퍼티에 채우는 역할이다.
+컨트롤러 안에 @RequestMapping이 적용된 요청 매서드의 매개변수로 설정해서 사용한다.
+...
+    // URL: /member로 POST 요청이 올 경우 처리
+    @PostMapping("/member")
+    public String submitForm(@ModelAttribute Member member, Model model) {
+        // @ModelAttribute Member member: 폼에서 전송된 데이터(id, passwd, ...)가 Member 객체의 필드(프로퍼티)에 자동으로 바인딩됩니다.
+        // Model model: 뷰 페이지(ViewPage02.html)로 데이터를 전달하기 위한 객체
+        // 바인딩된 member 객체를 "member"라는 이름으로 model에 추가
+
+        model.addAttribute("member", member);
+...
+
+
+
+
+@ModelAttribute를 사용하지 않는 경우
+
+...
+    @PostMapping("/member")
+    public String submitForm(Member member, Model model) {
+        model.addAttribute("member", member);
+...
+
+
+
+
+커맨드 객체 이름을 변경한 경우
+
+...
+    @PostMapping("/member")
+    public String submitForm(@ModelAttribute("member") Member mem, Model model) {
+        model.addAttribute("member", mem);
+...
+
+
+
+
+
+
+
+
+3. 메서드에 적용
+
+...
+    // 1. 요청 처리 메서드: GET 요청을 처리하고 ViewPage03을 반환
+    @GetMapping
+    public String showForm() {
+        return "ViewPage03";
+    }
+
+    // 2. @ModelAttribute 메서드 (모델 속성 이름: "title")
+    // @RequestMapping이 없지만 showForm()보다 먼저 호출되어 Model에 데이터를 추가합니다.
+    @ModelAttribute("title") // (1) 모델 속성 이름 명시
+    public void setTitle(Model model) {
+        // Model에 "title"이라는 이름으로 "ModelAttribute 예제" 값을 추가
+        model.addAttribute("title", "ModelAttribute 예제");
+    }
+
+    // 3. @ModelAttribute 메서드 (모델 속성 이름: "color")
+    // 메서드의 반환 값이 그대로 Model 속성에 추가됩니다. (속성 이름은 "color")
+    @ModelAttribute("color") // (2) 모델 속성 이름 명시
+    public List<String> populateColor() {
+        // List 객체를 반환하여 Model에 "color"라는 이름으로 자동 추가
+        return Arrays.asList("red", "green", "blue");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+3. @InitBinder를 이용한 커스턴 데이터 바이딩
+폼 페이지에서 전송되는 요청 파라미터의 데이터 바인딩을 사용자가 정의
+1. 매서드에 적용
+
+@InitBinder는 컨트롤러에서 사용자가 입력한 데이터가 커맨드 객체의 프로퍼티에 매핑되기 전에 데이터 바인딩을 사용자 정의(커스터마이징)하는 데 사용됩니다.
+사용자 첨 페이징서 입력 데이터를 커맨드 객체의 프로퍼티로 전체 또는 일부만 전달 가능
+@InitBinder
+
+@InitBinder("커맨드 객체")
+
+
+
+
+2. 폼 파라미터의 커스텀 데이터 마인딩
+
+setAllowedFields(): 허용되는 폼 파라미터를 설정
+
+기본값 none
+데이터 바인딩을 허용하지 않는 폼 파라미터 설정으로 바인딩 방지 가능
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    // 명시적으로 "id", "passwd", "city", "sex", "greetings"만 바인딩을 허용
+    // 나머지 폼 파라미터(예: hobby)는 바인딩에서 제외됩니다.
+    binder.setAllowedFields("id", "passwd", "city", "sex", "greetings");
+}
+
+
+
+
+setDisallowedFields():
+
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    // 명시적으로 "hobby" 파라미터만 바인딩을 차단
+    // 나머지 모든 폼 파라미터(id, passwd, city, sex, greetings 등)는 바인딩이 허용됩니다.
+    binder.setDisallowedFields("hobby");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4. [도서 쇼핑몰] 도서 등록 페이지 만들기
+1. 폼 태그로 도서 등록 페이지 만들기
+
+도서 등록 페이지를 출력하는 요청 처리 메서드 작성 (BookController)
+도서 등록 페이지 작성 (addBook.html)
+
+2. @ModelAttribute로 도서 등록 처리하기
+
+lombok 의존 라이브러리 등록
+롬복 애너테이션 선언
+신규 도서를 등록하는 메서드 정의 & 작성 (BookRepository)
+신규 도서를 등록하는 메서드 정의 & 작성 (BookService)
+신규 도서 등록하는 메서드 작성 (BookController)
+도서 등록 페이지에 제목을 출력하는 메서드 작성 ( BookController )
+도서 등록 페이지 작성 (addBook.html)
+
+3. @InitBinder로 커스텀 테이터 메서드 작성
+
+커스텀 데이터 바인딩 메서드 작성 ( BookController )
+
+
+
+
+
+
+
+퀴즈 :
+< 빈칸 채우기 5문제 (개념) >
+1. 사용자의 입력이나 선택 정보를 웹 서버로 전달하는 HTML 태그를 ____________태그라고 합니다.
+2. 폼 데이터 전송 시, 서버가 데이터를 처리하고 난 후 URL을 변경하여 다른 웹 페이지로 이동시키는 방식을 _________-방식이라고 합니다.
+3. 폼에서 전송된 파라미터 이름과 도메인 객체의 프로퍼티 이름이 일치할 때, Spring이 데이터를 자동으로 바인딩하는 객체를 _________ 객체라고 부릅니다.
+4. 컨트롤러에서 사용자가 입력한 데이터가 커맨드 객체의 프로퍼티에 매핑되기 전에 데이터 바인딩을 사용자 정의하는 데 사용되는 애너테이션은 ____________ 입니다.
+5. WebDataBinder 객체의 __________ 메서드는 폼 파라미터 중 특정 필드만 커맨드 객체로 바인딩되도록 허용하는 기능을 수행합니다.
+
+< 코드 문제 2개 (활용) >
+문제 1: 요청 처리 메서드보다 먼저 호출되어 Model에 "color"라는 이름으로 문자열 리스트를 추가하는 @ModelAttribute 메서드를 완성하세요.
+public class ExampleController {
+    // ...
+    @ModelAttribute(______(1)______)
+    public List<String> populateColor() {
+        // Model에 "color"라는 이름으로 List를 자동 추가
+        return Arrays.asList("red", "green", "blue");
+    }
+}
+
+
+
+문제 2: BookController에 @InitBinder 메서드를 추가하여, 폼에서 전송된 파라미터 중 "bookId", "name", "unitPrice" 이 세 가지 필드만 바인딩을 허용하도록 설정하는 코드를 완성하세요.
+// BookController.java
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    binder.setAllowedFields(______(2)______ , "name", "unitPrice");
+}
+
+
+
+답:
+1. form
+2. 리다이렉트
+3. 커맨드
+4. @InitBinder
+5. setAllowedFields
+
+
+
+
+
+
+1. @ModelAttribute("color")
+2. binder.setAllowedFields("bookId" , "name", "unitPrice");

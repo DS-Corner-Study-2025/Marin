@@ -26,6 +26,12 @@ public class BookServiceImpl implements BookService {
         return bookById;
     }
 
+    // 6장 2-6
+    @Override
+    public void setNewBook(Book book) {
+        bookRepository.setNewBook(book); // 리포지토리의 setNewBook 호출
+    }
+
     // 2-4 도서 분야를 가져오는 메서드 작성
     public List<Book> getBookListByCategory(String category) { //
         List<Book> booksByCategory = bookRepository.getBookListByCategory(category); //
