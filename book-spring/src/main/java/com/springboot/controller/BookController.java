@@ -109,6 +109,27 @@ public class BookController {
         return "redirect:/books"; // 리다이렉트
     }
 
+    // 7장 실습 7-3
+    @GetMapping("/download")
+    public void downloadBookImage(@RequestParam("file") String paramKey,
+            HttpServletResponse response) throws IOException {
+
+        File imageFile = new File(fileDir + paramKey);
+        
+        response.setContentType("application/download"); // 1. 다운로드 파일의 콘텐츠 타입 설정
+        response.setContentLength((int)imageFile.length()); // 2. 다운로드 파일의 크기 설정
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + paramKey + "\"");
+
+        OutputStream os = response.getOutputStream(); // 3. 서버로부터 파일 다운로드를 위한 OutputStream 객체
+        FileInputStream fis = new FileInputStream(imageFile); // 4. 파일 입력 객체 생성
+
+        // fis의 내용을 os로 복사
+        FileCopyUtils.copy(fis, os); 
+
+        fis.close();
+        os.close();
+    }
+
     // #6장 2-8
     // 모델에 공통 속성 추가 (도서 등록 페이지 제목)
     @ModelAttribute
