@@ -1,12 +1,17 @@
 package com.springboot.controller;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,21 +95,21 @@ public class BookController {
     // #6장 2-7 -> 7장 7-2
     @PostMapping("/add")
     public String submitAddNewBook(Book book) {
-        MultipartFile bookImage = book.getBookImage(); 
+        MultipartFile bookImage = book.getBookImage();
 
-        String saveName = bookImage.getOriginalFilename(); 
+        String saveName = bookImage.getOriginalFilename();
         File saveFile = new File(fileDir, saveName);
 
         if (bookImage != null && !bookImage.isEmpty()) {
             try {
-                bookImage.transferTo(saveFile); 
+                bookImage.transferTo(saveFile);
             } catch (Exception e) {
                 throw new RuntimeException("도서 이미지 업로드가 실패하였습니다.", e);
             }
         }
 
         book.setFileName(saveName);
-        book.service.setNewBook(book); // DB 저장 로직 (가정)
+        bookService.setNewBook(book); // DB 저장 로직 (가정)
 
         return "redirect:/books"; // 리다이렉트
     }
@@ -115,7 +120,7 @@ public class BookController {
             HttpServletResponse response) throws IOException {
 
         File imageFile = new File(fileDir + paramKey);
-        
+
         response.setContentType("application/download"); // 1. 다운로드 파일의 콘텐츠 타입 설정
         response.setContentLength((int)imageFile.length()); // 2. 다운로드 파일의 크기 설정
         response.setHeader("Content-Disposition", "attachment;filename=\"" + paramKey + "\"");
@@ -124,7 +129,7 @@ public class BookController {
         FileInputStream fis = new FileInputStream(imageFile); // 4. 파일 입력 객체 생성
 
         // fis의 내용을 os로 복사
-        FileCopyUtils.copy(fis, os); 
+        FileCopyUtils.copy(fis, os);
 
         fis.close();
         os.close();

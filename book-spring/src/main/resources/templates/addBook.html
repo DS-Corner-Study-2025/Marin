@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>도서 등록</title>
-    <link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
 <div class="container py-4">
@@ -22,7 +22,7 @@
     </div>
 
     <div class="row align-items-md-stretch">
-        <form action="/BookMarket/books/add" method="post" enctype="multipart/form-data">
+        <form th:object="${newBook}" action="/BookMarket/books/add" method="post" enctype="multipart/form-data">
             <legend>[[${addTitle}]]</legend>
 
             <div class="mb-3 row">
