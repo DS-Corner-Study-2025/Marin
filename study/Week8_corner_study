@@ -1,0 +1,54 @@
+###빈칸 문제 
+1. 애플리케이션의 모든 계층에서 사용할 수 있는 유효성 검사 방식은?: @Valid
+2. 사용자 정의 애너테이션을 만들 때 반드시 사용해야 하는 3가지 구성요소는?: 제약사항, valid, 오류 메시지
+3. 제약사항 애너테이션의 기본 메세지 중에서 비어 있을 수 없다는 의미를 갖는 것은?: NotBlank
+4. WebDataBinder 객체를 사용하여 Validator 인터페이스 구현체를 설정하는 애너테이션은?: initBinder
+5. 도메인 클래스의 멤버 변수에 제약사항 애너테이션을 선언하여 유효성 검사하는 방식은?: Bean Validation
+
+
+
+
+
+
+###코드 문제
+1. 빈칸에 들어갈 코드는?
+// controller
+@PostMapping
+   public String submit(___@Valid___ @ModelAttribute Product product, BindingResult bindingResult){      
+      if(bindingResult.hasErrors())    
+         return "viewPage01";    
+      return "viewPage01_result";
+   }
+
+
+2. 빈칸에 들어갈 코드는?
+// controller
+@Controller
+@RequestMapping("/exam04")
+public class Example04Controller {   
+
+    @Autowired
+   private PersonValidator personValidator;
+       
+   @GetMapping
+   public String showForm(Model model) {
+      model.addAttribute("person", new Person());
+      return "viewPage04";
+   }
+
+   @PostMapping
+   public String submit(@Valid @ModelAttribute Person person,BindingResult bindingResult)      {
+      
+      //personValidator.validate(person, bindingResult);
+      
+      if (bindingResult.hasErrors()) 
+         return "viewPage04";
+   
+      return "viewPage04_result";
+   }
+
+    __@InitBinder___
+       protected void initBinder(WebDataBinder binder) {
+           binder.setValidator(personValidator);
+       }
+}
