@@ -1,0 +1,64 @@
+
+###빈칸 문제 
+1. 스프링 시큐리티는 허가된 사용자만 특정 웹페이지에 접근하도록 제한하는 ______ 기능을 쉽게 구현하게 해준다.
+2. Thymeleaf에서 시큐리티 태그를 쓰려면 build.gradle에
+implementation 'org.thymeleaf.extras:____________________________' 를 추가한다.
+3. PasswordEncoder 빈은 사용자 비밀번호를 ________ 하기 위한 역할이다.
+4. HTTP 요청 인가(authorization)를 설정할 때 사용하는 메서드는 __________________() 이다.
+5. /manager/ 경로를 MANAGER 권한만 접근 가능하게 하려면
+.requestMatchers("/manager/**").______________("MANAGER") 를 사용한다
+6. Authentication authentication 에서 사용자 이름(계정)은 authentication.__________() 로 가져온다.
+7. 커스텀 로그인 페이지 경로를 설정하는 메서드는 ________________() 이다.
+
+
+1. 보안(Security)
+2. thymeleaf-extras-springsecurity6
+3. 암호화(단방향 암호화)
+4. authorizeHttpRequests
+5. hasRole
+6. getName
+7.loginPage
+
+
+###코드 문제
+
+1. 
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.authorizeHttpRequests(
+            _________________ -> authorizeHttpRequests
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")   // 1
+                .requestMatchers("/manager/**").hasRole("MANAGER")         // 2
+                .requestMatchers("/member/**").authenticated()             // 3
+                .anyRequest().permitAll()                                  // 4
+        );
+
+        return http.build();
+    }
+}
+
+답: authorizeHttpRequests
+
+
+2. 
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration {
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails admin = User.builder()
+                .___________("admin")      // 사용자 이름(계정)
+                .password("admin123")   // 사용자 비밀번호
+                .roles("ADMIN")         // 사용자 권한
+                .build();
+
+        return new InMemoryUserDetailsManager(admin);
+    }
+}
+답: username

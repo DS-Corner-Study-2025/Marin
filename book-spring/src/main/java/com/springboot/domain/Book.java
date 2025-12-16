@@ -1,11 +1,13 @@
 package com.springboot.domain;
 
+import com.springboot.repository.BookRepository;
 import lombok.Data;
 import java.math.BigDecimal;
 import org.springframework.web.multipart.MultipartFile;
 @Data
 
 public class Book {
+    public BookRepository service;
     private String bookId;        // 도서 ID
     private String name;          // 도서 제목
     private BigDecimal unitPrice; // 가격

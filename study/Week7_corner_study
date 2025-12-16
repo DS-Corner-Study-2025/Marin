@@ -1,0 +1,60 @@
+
+--------------------------------------------
+1. 다국어 처리에서 언어별 메시지는 보통 key=value 쌍으로 작성된 _____ 확장자를 가진 리소스 파일에 저장됩니다.
+2. Spring Boot는 _____ 인터페이스를 통해 메시지 리소스 파일에서 언어별 메시지를 가져와 출력하는 기능을 제공합니다.
+3. 웹 브라우저의 _____에 따라 한국어 메시지를 출력하려면, 메시지 리소스 파일 이름을 messages_ko로 만들고 파일 확장자는  .properties로 작성해야 합니다.
+4. 사용자 정의 환경 설정을 위해 메시지 리소스 파일의 기본 이름 및 위치를 설정하는 속성은 spring.messages._____ 입니다.
+5. 로케일 정보(예: ko_KR)를 사용자 세션(Session)에 저장하여 언어를 유지하게 하는 로케일 결정 유형은 _____ 입니다.
+6. LocaleResolver 중, HTTP 요청 헤더의 Accept-Language 값을 이용하여 로케일을 결정하는 유형은 _____ 입니다.
+7. application.yml 파일에서 메시지 리소스 파일의 인코딩을 지정할 때 사용하는 속성은 spring.messages._____ 입니다.
+
+=====================문제 정답===========================================
+
+1. .properties
+2. MessageSource
+3. 언어 설정(Locale)
+4. basename
+5. SessionLocaleResolver
+6. AcceptHeaderLocaleResolver
+7. encoding
+
+
+
+
+
+
+
+
+
+코드 빈칸 문제 (2개)
+1. 다음 코드는 로케일 정보를 사용자 세션에 저장하는 방식의 LocaleResolver를 정의합니다. 빈칸에 들어갈 클래스명은 무엇입니까?
+
+@Bean
+public LocaleResolver localeResolver() {
+    _____ resolver = new SessionLocaleResolver();
+    // 애플리케이션의 기본 로케일을 영어(Locale.ENGLISH)로 설정
+    resolver.setDefaultLocale(Locale.ENGLISH);
+    return resolver;
+}
+
+
+2. 빈칸에 들어갈 클래스명은 무엇입니까?
+
+@Bean
+    public _____ localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        // 로케일을 변경할 때 사용할 URL 파라미터 이름을 "language"로 지정
+        interceptor.setParamName("language");
+        return interceptor;
+    }
+
+
+
+
+
+
+=====================문제 정답===========================================
+
+SessionLocaleResolver
+
+LocaleChangeInterceptor

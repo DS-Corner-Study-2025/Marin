@@ -1,0 +1,204 @@
+책 제목: 스프링 부트 완전 정복
+페이지: 236p ~ 239p
+목차: 8장 다국어 처리
+
+
+
+
+
+1. 다국어 처리의 개요
+다양한 언어로 작성된 메시지를 웨 브라우저에 따라 각언어에 대당하는 메시지로 표현할 수 있다.
+
+
+
+
+2. MessageSource를 이용한 다국어 처리
+1. 메지시 리소스 파일 작성
+
+언어 대한 메시지 리소스 파일(.properties)을 생성하고 출력 메시지를 작성합니다.
+key=value 쌍으로 messages.properties
+// 파일이름_ko.properties
+Persom.form.Enter.message = 당신의 정보를 입력하세요.
+
+
+
+
+2. 기본 환경 설정
+
+Spring Boot는 MessageSource라는 인터페이스를 제공하며, 이를 통해 messages.properties와 같은 메시지 리소스 파일에서 언어별 메시지를 가져와 출력합니다.
+웹 브라우저의 언어 설정(Locale)에 따라 다양한 언어의 메시지를 출력하는 것입니다.
+한국어 환경: messages_ko.properties (예: Person.form.Enter.message = 당신의 정보를 입력하세요.)
+영어 환경: messages_en.properties (예: Person.form.Enter.message = Input your information)
+기본/기타 환경: messages.properties (기본값)
+별도의 빈(Bean) 등록 없이도 Spring Boot가 자동으로 ResourceBundleMessageSource를 등록하여 resources 폴더 아래의 messages.properties 파일을 읽어옵니다.
+
+
+
+
+3. 사용자 정의 환경 설정
+
+Spring Boot가 기본으로 설정하는 MessageSource의 속성(파일명, 인코딩 등)을 변경하고 싶을 때 사용합니다.
+설정 파일: application.properties 또는 application.yml 파일에 설정합니다.
+// application.yml
+
+spring:
+  messages:
+    # 1. 메시지 리소스 파일의 기본 이름 및 위치 설정
+    # resources 폴더 하위 messages/i18n.properties 파일 등을 찾습니다.
+    basename: messages/i18n
+
+    # 2. 메시지 리소스 파일의 인코딩을 UTF-8로 지정
+    encoding: UTF-8
+
+    # 3. 메시지를 못 찾았을 때 시스템 로케일(Locale)을 사용할지 여부 (사용 안 함)
+    fallbackToSystemLocale: false
+
+    # 4. MessageFormat 규칙을 항상 적용할지 여부 (적용)
+    alwaysUseMessageFormat: true
+
+
+// application.properties
+spring.messages.basename=messages/i18n
+spring.messages.encoding=UTF-8
+spring.messages.fallbackToSystemLocale=false
+spring.messages.alwaysUseMessageFormat=true
+
+
+
+
+
+
+
+
+
+
+3. LocaleRecolver와  LocaleChangeInterceptor를 이용한 다국어 변경
+1. 로케일 설정
+
+정의: 사용자의 언어와 지역(국가) 정보를 통합하여 나타내는 개념입니다. (예: ko_KR = 한국어, 대한민국)
+목적: MessageSource가 이 정보를 바탕으로 messages_ko.properties, messages_en.properties 등 적절한 리소스 파일을 선택하게 합니다.
+로케일 결정 유형: LocaleResolver
+AcceptHeaderLocaleResolver: HTTP 요청 헤더의 Accept-Language 값(웹 브라우저 설정)을 이용하여 로케일을 결정합니다. 브라우저 설정에 맞는 언어를 자동으로 제공할 때
+CookieLocaleResolver: 로케일 정보를 쿠키(Cookie)에 저장하여 사용자가 나중에 다시 접속해도 이전에 선택한 언어를 유지하게 합니다. 사용자 선택 언어를 장기간 보존할 때
+SessionLocaleResolver: 로케일 정보를 사용자 세션(Session)에 저장하여 사용자가 웹을 사용하는 동안 언어를 유지하게 합니다. 예시 코드에서 사용된 유형이며, 세션이 만료되면 정보가 사라집니다.
+FixedLocaleResolver: 로케일을 특정 언어로 고정합니다. (예: 무조건 영어)특정 지역/언어만 지원하는 서비스나 테스트용
+
+
+@Configuration
+public class MessageConfig implements WebMvcConfigurer {
+
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver resolver = new SessionLocaleResolver();
+        // 애플리케이션의 기본 로케일을 영어(Locale.ENGLISH)로 설정
+        resolver.setDefaultLocale(Locale.ENGLISH);
+        return resolver;
+    }
+
+}
+
+
+
+
+
+
+2. 로케일 변경
+
+사용자가 URL 파라미터를 통해 로케일을 동적으로 변경할 수 있도록 하는 설정입니다.
+웹 요청의 파라미터에 로케일 값을 전달하여 손쉽게 로케일을 바꿀 수 있다.
+http://localhost:8080/exam04?language=ko로 요청하면 로케일이 한국어로 변경됩니다.
+http://localhost:8080/exam04?language=en로 요청하면 로케일이 영어로 변경됩니다.
+
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        // 로케일을 변경할 때 사용할 URL 파라미터 이름을 "language"로 지정
+        interceptor.setParamName("language");
+        return interceptor;
+    }
+
+
+<a href="?language=ko">Korean</a>|<a href="?language=en">English</a>
+
+
+
+
+
+
+
+
+4. [도서 쇼핑몰] 도서 등록 페이지의 다국어 처리하기
+1. 다국어 처리하기
+
+MessageSource의 사용자 환경 설정 (application.properties)
+메시지 리소스 파일 작성 (message_ko.properties)
+도서 등록 페이지의 메시지 출력 (addBook.html)
+2. 다국어 변경을 위한 빈 객체 등록
+
+다국어 변경을 위한 빈 객체 등록 (MeddageConfig)
+도서 등록 페이지에 요청 파라미터 추가 (addBook.html)
+
+
+
+
+
+
+--------------------------------------------
+1. 다국어 처리에서 언어별 메시지는 보통 key=value 쌍으로 작성된 _____ 확장자를 가진 리소스 파일에 저장됩니다.
+2. Spring Boot는 _____ 인터페이스를 통해 메시지 리소스 파일에서 언어별 메시지를 가져와 출력하는 기능을 제공합니다.
+3. 웹 브라우저의 _____에 따라 한국어 메시지를 출력하려면, 메시지 리소스 파일 이름을 messages_ko로 만들고 파일 확장자는  .properties로 작성해야 합니다.
+4. 사용자 정의 환경 설정을 위해 메시지 리소스 파일의 기본 이름 및 위치를 설정하는 속성은 spring.messages._____ 입니다.
+5. 로케일 정보(예: ko_KR)를 사용자 세션(Session)에 저장하여 언어를 유지하게 하는 로케일 결정 유형은 _____ 입니다.
+6. LocaleResolver 중, HTTP 요청 헤더의 Accept-Language 값을 이용하여 로케일을 결정하는 유형은 _____ 입니다.
+7. application.yml 파일에서 메시지 리소스 파일의 인코딩을 지정할 때 사용하는 속성은 spring.messages._____ 입니다.
+
+=====================문제 정답===========================================
+
+1. .properties
+2. MessageSource
+3. 언어 설정(Locale)
+4. basename
+5. SessionLocaleResolver
+6. AcceptHeaderLocaleResolver
+7. encoding
+
+
+
+
+
+
+
+
+
+코드 빈칸 문제 (2개)
+1. 다음 코드는 로케일 정보를 사용자 세션에 저장하는 방식의 LocaleResolver를 정의합니다. 빈칸에 들어갈 클래스명은 무엇입니까?
+
+@Bean
+public LocaleResolver localeResolver() {
+    _____ resolver = new SessionLocaleResolver();
+    // 애플리케이션의 기본 로케일을 영어(Locale.ENGLISH)로 설정
+    resolver.setDefaultLocale(Locale.ENGLISH);
+    return resolver;
+}
+
+
+2. 빈칸에 들어갈 클래스명은 무엇입니까?
+
+@Bean
+    public _____ localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        // 로케일을 변경할 때 사용할 URL 파라미터 이름을 "language"로 지정
+        interceptor.setParamName("language");
+        return interceptor;
+    }
+
+
+
+
+
+
+=====================문제 정답===========================================
+
+SessionLocaleResolver
+
+LocaleChangeInterceptor
