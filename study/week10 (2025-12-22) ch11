@@ -1,0 +1,241 @@
+
+1. 예외 처리
+1) 예외 처리 (exception handling)
+오류 처리
+문제 발생 -> 해당 처리 중단 -> 다른 처리
+비정상 종료 막음. 정상 실행 상태 유지
+예외 처리 방법: @ResponseStatus, @ExceptionHandler, @ControllerAdvice
+2) @ResponseStatus
+HTTP 상태 코드 
+서버가 정상 처리되었는지, 오류 발생했는지 등의 정보를 담고 있는 코드
+HTTP 상태 코드 주요 유형
+상태 코드	설명
+400	BAD_REQUST	일반적인 요청 실패
+401	UNAUTHORIZED	클라이언트 인증 문제
+403	FORBIDDEN	인증 상태와 상관없이 접근 금지
+404	NOT_FOUND	요청 url에 해당하는 리소스 없음
+405	METHOD_NOT_ALLOWD	http 메서드가 지원되지 않음
+406	NOT_ACCEPTABLE	요청된 리소스 미디어 타입을 제공x
+409	CONFILCT	리소스 상태에 위반되는 행위
+412	PRECONDITION_FAILD	조건부 연산을 지원
+415	UNSUPPORTED_MEDIA_TYPE	요청 페이로드에 있는 미디어 타입 처리x
+500	INTERNAL_SERVER_ERROR	api가 잘못 작동
+@ResponseStatus 
+예외 처리 예외 발생 -> HTTP 상태 코드 전달
+@ResponseStatus 요소: code, reason, value
+// 메서드에 선언
+@Controller
+public class Example01Controller {	
+	
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="요청 실패했습니다.")
+	@GetMapping("/exam01")
+	public void  requestMethod() {
+		System.out.print(new IllegalArgumentException("요청 실패했습니다.").getMessage());	
+    }
+}
+// 클래스에 선언
+@Controller
+public class Example02Controller {	
+	
+	@GetMapping("/exam02")
+	public void  requestMethod() throws Exception {
+		 throw new Exception(new UserException("UserException 메시지입니다"));
+    }
+}
+3) @ExceptionHandler
+컨트롤러 요청 처리 메서드에서 발생한 예외처리
+반드시 매개변수로 예외 클래스 설정 필요
+발생한 예외 정보, 특정 뷰 페이지로 이동
+@ExceptionHandler 요소: value-> 예외 처리 클래스 이름
+@Controller
+public class Example03Controller {	
+	
+	@GetMapping("/exam03")
+	public void  requestMethod(){
+		 throw new UserException("UserException 메시지입니다");
+    }
+	
+	@ExceptionHandler(UserException.class)  // 예외 클래스 UserException
+	public String handleException(UserException ex, Model model) {
+				
+		model.addAttribute("data1", ex.getMessage());		
+		model.addAttribute("data2", ex);
+		
+		return "viewPage01";
+	}
+}
+<html>
+<head>
+<title>Chap11</title>
+</head>
+<body>
+<h3>예외 처리</h3>
+	<p>오류 메시지: [[${data1}]]	//
+	<p>예외 발생: [[${data2}]]	
+</body>
+</html>
+4) @ControllerAdvice
+하나의 컨트롤러 안에서 예외 처리
+여러 컨트롤러의 예외를 공통으로 처리
+@ControllerAdvice 요소: annotations, assignableTypes, vasePackageClasses, basePackages, value
+@ExpectionHandler, @ModelAttribute, @InitBinder 가 선언한 메서드 사용 가능
+@Controller
+public class Example04Controller {	
+	
+	@GetMapping("/exam04")
+	public void  requestMethod(){
+		 throw new UserException("UserException 메시지입니다");
+    }	
+}
+@ControllerAdvice(basePackages={"com.springboot"}) // 여러 컨트롤러에서 발생한 예외
+public class GlobalException{
+
+	@ExceptionHandler(value={RuntimeException.class})
+	private String handleErrorMethod(Exception ex, Model model) {
+	  
+		model.addAttribute("data1",  "GlobalException 메시지입니다");
+		model.addAttribute("data2", ex );
+
+	   return "viewPage01";
+	}
+}
+2. 로그 기록
+1) 로그
+로그(Log) : 버그나 성능에 관한 통계 등의 정보를 전달
+로깅 라이브러리: java.util.logging, Log4j, Logback, Log4j2
+로그 레벨 6단계 
+
+SLF4J : 로깅 라이브러리를 통일된 방식으로 사용 가능하도록 하는 추상 인터페이스
+
+@Controller
+public class Example01Controller {	
+
+	@GetMapping("/exam01")
+	public String  requestMethod2(Model model) {
+		Logger logger = LoggerFactory.getLogger(Example01Controller.class);	
+		logger.trace("Trace 메시지!");
+		logger.debug("Debug 메시지!");
+		logger.info("Info 메시지!");  // INFO 레벨 이상
+		logger.warn("Warn 메시지!");
+		logger.error("Error 메시지!"); 
+		
+		model.addAttribute("data","Slf4j로 로그 출력하기" );
+        
+        return "viewPage";
+	
+	}
+}
+<html>
+<head>
+<title>Chap12</title>
+</head>
+<body>
+	<h3>로그 기록</h3>
+	<p> [[${data}]]	
+</body>
+</html>
+@Slf4j : 롬복에서 제공하는 로그를 자동으로 생성하는 애너테이션
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
+@Controller
+public class Example02Controller {	
+
+	
+	@GetMapping("/exam02")
+	public String  requestMethod2(Model model) {
+		 // 로그 객체 선언 불필요
+		 log.trace("Trace 메시지!");
+		 log.debug("Debug 메시지!");
+		 log.info("Info 메시지!");  // INFO 레벨 이상
+		 log.warn("Warn 메시지!");
+		 log.error("Error 메시지!"); 
+		
+		 
+		 model.addAttribute("data","@Slf4j로 로그 출력하기" );
+        
+        return "viewPage";
+	
+	}
+}
+2) Log4j2
+Log4j를 기반으로 함. 보안 취약점 개선
+기본 라이브러리인 Logback과 충돌 -> Logback 라이브러리 삭제, Log4j2 의존성 라이브러 정보 등록
+확장성, 가독성, 다양한 형식의 로깅 설정 지원, 여러 API 지원, 개선된 속도 
+
+
+Log4j2 구조
+최상위 요소 <Configuration> - 하위 요소 <Properties>, <Appenders>, <Loogers>
+logger 설정
+모든 로깅 기능 처리
+상위 요소 <Logger> 
+<Root> 요소 반드시 추가
+appender 설정
+로그 정보 출력할 위치
+상위 요소 <Appenders> 
+로그 출력 패턴 Layout 정의
+<Console> : 
+<File>
+<RollingFile>
+
+layout  설정
+로그 출력 형식
+HTMLLayout, PatternLayout, RFC5424Layout, XMLLayout
+< Appenders> 내에 정의
+<?xml version="1.0" encoding="UTF-8"?> 
+<Configuration> 
+    <Appenders>     
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%C] %m%n"/>
+        </Console>
+    </Appenders>    
+    <Loggers>
+        <Root level="info" additivity="true">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers> 
+</Configuration>
+3) 인터셉터
+컨트롤러에 들어보는 요청, 컨트롤러가 응답하는 요청 -> 가로채서 특정 작업 처리
+핸들러 인터셉터
+서버에서 데이터 가져오기, 제출 중복 막기 등에서 이용
+클래스 생성 (HandlerInterceptor 인터페이스 구현) + 클래스 빈 등록 
+
+
+HandlerInterceptor 인터페이스
+preHandle(), postHandle(), afterCompletion() 메서드 가짐
+컨트롤러 들어가기 전, 컨트롤러가 처리한 후, 뷰에 응답 전송이 종료된 후
+@Slf4j
+public class ExampleInterceptor implements HandlerInterceptor {
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+	
+    	log.info("preHandle() 호출......");
+
+    	if (handler instanceof HandlerMethod) { 	    	 
+    		HandlerMethod method = (HandlerMethod) handler; 
+    		log.info("핸들러 메소드명 : " + method.getMethod().getName()); 
+    	}	    	 
+		return HandlerInterceptor.super.preHandle(request, response, handler);
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		log.info("postHandle() 호출......");		
+		HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		log.info("afterCompletion() 호출......");		
+		HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+	}
+
+}
+출처: 송미영,『 스프링 부트 완전 정복 』, 길벗(2024).
+
+Coner Spring1
+
+Editor: soyee
