@@ -1,0 +1,69 @@
+// 빈칸
+1. 클라이언트가 보낸 JSON 데이터를 자바 객체로 변환해서 받을 때 사용하는 애너테이션은 ________ 이다.
+2. 자바 객체를 응답 본문에 담아 JSON 형식으로 직접 반환할 때 사용하는 애너테이션은 ________ 이다.
+3. @Controller와 @ResponseBody를 합친 것으로, REST API 전용 컨트롤러를 만들 때 사용하는 애너테이션은 ________ 이다.
+4. 자바 객체와 JSON 사이의 데이터 변환을 자동으로 처리해주는 '통역사' 역할을 하는 클래스는 ________ 이다.
+5. RESTful CRUD 작업 중에서 기존 데이터를 '수정(Update)'하기 위해 사용하는 요청 방식은 ________ 방식이다.
+6. PUT이나 DELETE 요청을 처리하기 위해 application.properties에 설정해야 하는 값은 ________ 이다.
+7. HTML 폼에서 PUT 방식으로 데이터를 보내기 위해 hidden 태그의 name 속성에 써야 하는 값은 ________ 이다.
+
+-----------------------------------
+1. @RequestBody
+2. @ResponseBody
+3. @RestController
+4. HttpMessageConverter
+5. PUT
+6. hiddenmethod
+7. _method
+
+
+
+
+// 코드
+
+1. @RequestBody를 활용한 요청 데이터 처리
+
+@Controller
+@RequestMapping("/exam02")
+public class Example02Controller {
+
+    @GetMapping("/form")
+    public String form() {
+        return "exam02/form"; 
+    }
+
+    @PostMapping("/submit")
+    @ResponseBody 
+    public Map<String, String> submit(@_________ HashMap<String, String> map) {
+        // @RequestBody: HTTP 요청 본문(JSON)을 Map 객체로 변환
+        return map; 
+    }
+}
+
+2. 
+@Controller
+@RequestMapping("/exam05")
+public class Example05Controller {
+
+    // 수정을 위한 폼 페이지 출력 (GET 방식)
+    @GetMapping
+    public String showForm(@ModelAttribute Person person) {
+        return "viewPage05";
+    }
+
+    // 데이터를 실제로 수정 처리 (PUT 방식)
+    @_________
+    public String submit(@ModelAttribute Person person, Model model) {
+        model.addAttribute("data1", "@PutMapping 적용하기");
+        model.addAttribute("data2", person);
+        System.out.println(person); 
+        return "viewPage05_result";
+    }
+}
+
+
+
+------------------------------------
+
+1. RequestBody
+2. PutMapping
