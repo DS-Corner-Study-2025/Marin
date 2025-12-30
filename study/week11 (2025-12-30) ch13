@@ -1,0 +1,201 @@
+
+
+
+
+
+
+1. RESTful 웹 서비스의 개요
+REST(Representational State Transfer) 원리를 사용하여 HTTP와 웹의 장점을 최대한 활용할 수 있는 아키텍처입니다.
+특정 자원에 대해 CRUD(Create, Read, Update, Delete) 연산을 수행하기 위해 URI로 자원을 명시하고, GET, POST, PUT, DELETE 등의 HTTP 방식을 사용하여 요청을 보냅니다.
+RESTful 웹 서비스의 3대 구성 요소
+리소스 (Resource): 서버의 고유한 아이디를 가진 자원을 의미하며 URI에 해당합니다.
+메서드 (Method): 리소스에 대해 요청을 보내는 방식으로 GET, POST, PUT, PATCH, DELETE 등이 있습니다.
+리소소 형태 (Representation): 클라이언트와 서버가 데이터를 주고받는 형태로 JSON, XML, TEXT 등이 있으며 최근에는 JSON을 주로 사용합니다.
+URL과 URI의 차이 URL은 리소스의 위치를 의미하고, URI는 리소스를 식별하는 문자열 구성을 의미합니다. URI가 URL을 포함하는 더 포괄적인 범위입니다.
+
+
+
+
+
+
+
+
+
+2. RESTful 방식의 애너테이션
+주요 애너테이션 요약
+
+유형	설명
+@RequestBody	컨트롤러 요청 처리 메서드의 매개변수에 선언하며, HTTP 요청 본문(body)을 해당 매개변수에 바인딩합니다.
+@ResponseBody	컨트롤러 요청 처리 메서드의 매개변수에 선언하며, 반환값을 HTTP 응답 본문(body)에 바인딩합니다.
+@RestController	@Controller와 @ResponseBody를 결합한 형태로, REST API를 제공하는 컨트롤러임을 명시합니다.
+
+
+2.1 @RequestBody
+HTTP 요청 본문 내용을 XML, JSON 또는 기타 데이터 형태의 자바 객체로 매핑하는 역할을 합니다.
+폼 페이지에서 name=value 형태로 전송되는 일반적인 데이터는 @RequestParam 등을 사용하지만, JSON과 같은 문자열 형태의 데이터는 @RequestBody를 통해 전달받아야 합니다.
+// @RequestBody로 단일 매개변수 받기
+
+@PostMapping()
+public String submit(@RequestBody String param, Model model) {
+    model.addAttribute("data1", "@RequestBody로 정보 받기");
+    model.addAttribute("data2", param);
+    return "viewPage01_result";
+}
+요청 처리를 RequestBody에 선언하고 선언된 매개변수는 폼 페이지에서 입력된 다중 값을 &로 연결된 name = value형태로 전달 받습니다. 
+폼페이지에서 입력을 하면, sumit(컨트롤러 요청처리 메서드)에서 매개변수를 받가 각각을 출력합니다. (data1, data2)
+
+
+
+
+// @RequestBody를 활용한 요청 데이터 처리
+
+@Controller
+@RequestMapping("/exam02")
+public class Example02Controller {
+
+    @GetMapping("/form")
+    public String form() {
+        return "exam02/form"; // 입력 폼 페이지로 이동
+    }
+
+    @PostMapping("/submit")
+    @ResponseBody // 리턴값을 페이지가 아닌 데이터(JSON 등)로 응답
+    public Map<String, String> submit(@RequestBody HashMap<String, String> map) {
+        // @RequestBody: HTTP 요청 본문(JSON)을 Map 객체로 변환
+        return map; // 전달받은 데이터를 그대로 JSON 형태로 반환
+    }
+}
+사용자 웹 요청이 GET방식이면 컨트롤러 요청 처리 메서드가 showFOrm()으로 viewPage02를 출력합니다. 
+폼을 입력하면 POST방식으로 호출되어 sumit()이 실행됩니다.
+sumit매서드는 매개변수 HashMap타입의 map객체는 JSON형식으로 전달됩니다. 
+
+
+2.2 @ResponseBody
+자바 객체를 HTTP 응답 본문(body) 내용으로 매핑하여 클라이언트에게 전달합니다.
+@RequestBody와 마찬가지로 데이터 형식(JSON/XML)에 맞는 메시지 변환기(HttpMessageConverter)가 작동하여 자동으로 변환해 줍니다.
+@Controller
+@RequestMapping("/exam03")
+public class Example03Controller {
+
+    @GetMapping("/submit")
+    @ResponseBody // 객체를 직접 HTTP 응답 본문으로 전송
+    public Person submit() {
+        Person person = new Person();
+        person.setName("HongGilSon");
+        person.setAge(20);
+        person.setEmail("hgs@naver.com");
+        
+        return person; // MappingJackson2HttpMessageConverter가 JSON으로 자동 변환 
+        		// 객체가 JSON 형식 {"name":"HongGilSon", ...}으로 응답됨
+    }
+}
+package com.springboot.domain;
+
+import lombok.Data; // Lombok 라이브러리 사용
+
+@Data // Getter, Setter, toString, EqualsAndHashCode 등을 자동 생성
+public class Person {
+    private String name;
+    private String age;
+    private String email;
+}
+
+
+
+
+
+
+2.3 @RestController
+클래스 전체에 @RestController를 적용하여 모든 메서드에서 @ResponseBody를 생략하는 최신 방식입니다.
+@Controller일때는 @ResponseBody를 선언해야 하지만 @RestController를 사용하면 @ResponseBody를 붙일 필요 없다. 
+메서드마다 @ResponseBody를 자동으로 붙여 코드가 간결해집니다.
+변환값을 JSON으로 변환해서 응답합니다.
+@RestController // @Controller + @ResponseBody 합쳐진 형태
+@RequestMapping("/exam04")
+public class Example04Controller {
+
+    @GetMapping("/submit")
+    public Person submit() {
+        // 별도의 @ResponseBody 선언 없이도 Person 객체가 JSON으로 반환됨
+        Person person = new Person();
+        person.setName("HongGilSon");
+        person.setAge(20);
+        person.setEmail("hgs@naver.com");
+        
+        return person;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+3. RESTful 웹 서비스의 CRUD
+CRUD(Create, Read, Update, Delete)를 HTTP 요청 방식과 매핑하여 리소스에 접근합니다.
+유형	설명	CRUD 작업
+POST	새로운 리소스를 생성하거나 기존 리소스를 갱신	Create
+GET	리소스를 조회하여 읽어 오기	Read
+PUT	리소스를 변경	Update
+DELETE	기존 리소스를 삭제	Delete
+OPTION	리소스에 대한 사용 가능한 작업 얻기	
+
+
+// application.properties
+spring.mvc.hiddenmethod.filter.enabled=true
+
+
+
+
+@Controller
+@RequestMapping("/exam05")
+public class Example05Controller {
+
+    // 수정을 위한 폼 페이지 출력 (GET 방식)
+    @GetMapping
+    public String showForm(@ModelAttribute Person person) {
+        return "viewPage05";
+    }
+
+    // 데이터를 실제로 수정 처리 (PUT 방식)
+    @PutMapping
+    public String submit(@ModelAttribute Person person, Model model) {
+        model.addAttribute("data1", "@PutMapping 적용하기");
+        model.addAttribute("data2", person);
+        System.out.println(person); // 콘솔에 수정된 객체 정보 출력
+        return "viewPage05_result";
+    }
+}
+<form action="exam05" method="post">
+    <input type="hidden" name="_method" value="put" /> 
+    
+    <p>이름 : <input type="text" name="name" /></p>
+    <p>나이 : <input type="text" name="age" /></p>
+    <p>이메일 : <input type="text" name="email" /></p>
+    <input type="submit" value="확인" />
+</form>
+
+
+
+
+
+
+
+
+4. [도서 쇼핑몰] 장바주니 페이지 만들기
+RESTful 방식의 장바구니 기본 구조 만들기
+RESTful 웹 서비스를 위한 장바구니 CRUD 만들기
+
+
+
+
+
+
+
+ 
+
+출처 : 송미영, 『 스프링부트 완전정복: 개념부터 실정 프로젝트까지 』길벗캠퍼스 (2024).
